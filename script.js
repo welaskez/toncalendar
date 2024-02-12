@@ -144,7 +144,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 const imageInput = document.getElementById('event-image');
                 const image = imageInput.files[0]
                 
-                if (date && title) {
+                if (date && title && description && image) {
                     const reader = new FileReader();
                     reader.onload = function() {
                         events[date] = { title, description, image: reader.result }; 
@@ -155,7 +155,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     }
                     reader.readAsDataURL(image);
                 } else {
-                    alert("Please enter date and title.");
+                    alert("Please enter date, title, description and upload image.");
                 }
             });
         } else {
@@ -208,4 +208,3 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 });
-
