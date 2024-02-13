@@ -67,16 +67,17 @@ document.addEventListener("DOMContentLoaded", function() {
 
     saveButton.addEventListener("click", function() {
         const date = eventInput.value;
+        const start = start.value
+        const end = end.value
         const title = titleInput.value;
         const description = descriptionInput.value;
         const image = imageInput.value;
         
-        if (date && title) {
-            events[date] = { title, description, image };
+        if (date && title && description && image && startTime && endTime) {
+            events[date] = { title, description, image, start, end };
             closeModal();
             displayEvents();
             saveToCookie();
-            console.log(events)
         } else {
             alert("Please enter date and title.");
         }
@@ -131,6 +132,10 @@ document.addEventListener("DOMContentLoaded", function() {
             modalContent.innerHTML = `
                 <input type="date" id="event-date">
                 <input type="text" id="event-title" placeholder="Event title">
+                <div id="timeInputs">
+                    Start: <input type="time" id="start-time" placeholder="Start time"> 
+                    End: <input type="time" id="end-time" placeholder="End time">
+                </div>
                 <textarea id="event-description" placeholder="Event description"></textarea>
                 <input type="file" id="event-image">
                 <button class="save">Save</button>
@@ -139,23 +144,24 @@ document.addEventListener("DOMContentLoaded", function() {
             const saveButton = modalContent.querySelector('.save'); 
             saveButton.addEventListener("click", function() {
                 const date = document.getElementById('event-date').value;
+                const start = modalContent.querySelector('#start-time').value;
+                const end = modalContent.querySelector('#end-time').value;
                 const title = document.getElementById('event-title').value;
                 const description = document.getElementById('event-description').value;
                 const imageInput = document.getElementById('event-image');
                 const image = imageInput.files[0]
                 
-                if (date && title && description && image) {
+                if (date && title && description && image && start && end) {
                     const reader = new FileReader();
                     reader.onload = function() {
-                        events[date] = { title, description, image: reader.result }; 
+                        events[date] = { title, description, image: reader.result, start, end }; 
                         closeModal();
                         displayEvents();
                         saveToLocalStorage()
-                        console.log(events)
                     }
                     reader.readAsDataURL(image);
                 } else {
-                    alert("Please enter date, title, description and upload image.");
+                    alert("Please complete all fields.");
                 }
             });
         } else {
@@ -163,6 +169,10 @@ document.addEventListener("DOMContentLoaded", function() {
             if (eventData) {
                 modalContent.innerHTML = `
                     <p>Date: ${date}</p>
+                    <div id="timeInputs">
+                        <p id="start-time">Start: ${eventData.start}</p>
+                        <p id="end-time">End: ${eventData.end}</p>
+                    </div>
                     <p>Title: ${eventData.title}</p>
                     <p class="description">Description: ${eventData.description}</p>
                     <img src="${eventData.image}" alt="Event image">
@@ -182,6 +192,8 @@ document.addEventListener("DOMContentLoaded", function() {
         document.body.classList.add('modal-open'); 
         modal.style.display = 'block'; 
     }
+
+    highlightEventDates()
 
     function closeModal() {
         document.body.classList.remove('modal-open'); 
@@ -204,6 +216,17 @@ document.addEventListener("DOMContentLoaded", function() {
                 cell.appendChild(eventElement);
             } else {
                 alert(`Cell for date ${date} not found.`);
+            }
+        });
+    }
+
+    function highlightEventDates() {
+        const cells = document.querySelectorAll('.calendar-table td');
+    
+        cells.forEach(cell => {
+            const date = cell.dataset.date;
+            if (events[date]) {
+                cell.classList.add('event-highlight');
             }
         });
     }
