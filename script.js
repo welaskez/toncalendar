@@ -264,17 +264,16 @@ document.addEventListener("DOMContentLoaded", function() {
         
     function highlightEventDates() {
         const cells = document.querySelectorAll('.calendar-table td');
-    
+        
         cells.forEach(cell => {
             const date = cell.dataset.date;
             const eventDataForDate = events.filter(event => event.date === date);
             const numberOfEvents = eventDataForDate.length;
     
-            let dotsMarkup = '';
-            for (let i = 0; i < numberOfEvents; i++) {
-                dotsMarkup += '<span class="event-dot"></span>';
+            if (numberOfEvents > 0) {
+                const existingContent = cell.innerHTML; // Сохраняем текущее содержимое ячейки
+                cell.innerHTML = `<span class="event-dot">${numberOfEvents}</span>${existingContent}`; // Добавляем количество событий перед текущим содержимым ячейки
             }
-            cell.innerHTML += dotsMarkup;
         });
     }
     highlightEventDates()
