@@ -271,7 +271,7 @@ document.addEventListener("DOMContentLoaded", function() {
             const numberOfEvents = eventDataForDate.length;
     
             if (numberOfEvents > 0) {
-                const existingContent = cell.innerHTML; // Сохраняем текущее содержимое ячейки
+                const existingContent = cell.innerHTML;
                 cell.innerHTML = `<span class="event-dot">${numberOfEvents}</span>${existingContent}`; // Добавляем количество событий перед текущим содержимым ячейки
             }
         });
