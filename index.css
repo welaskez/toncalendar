@@ -129,6 +129,7 @@ button img {
 }
 
 .calendar-table td:not(:empty){
+    position: relative;
     padding: 60px;
     margin-left: 10px;
     font-size: 30px;
@@ -206,17 +207,14 @@ textarea:focus {
     color: #000; 
 }
 
-.event-dot {
-    position: relative;
-    vertical-align: top; 
-    display: inline-block;
-    width: 4px;
-    left: -50px;
-    top: -30px;
-    margin-left: 1px;
-    height: 4px;
-    border-radius: 50%;
-    background-color: #007bff; 
+.calendar-table td .event-dot {
+    position: absolute;
+    top: 15px; 
+    left: 15px; 
+    width: 6px; 
+    height: 6px; 
+    color: skyblue;
+    font-size: 15px;
 }
 
 .modal-content textarea {
@@ -402,13 +400,6 @@ textarea:focus {
         background-color: rgb(95, 93, 93);
     }
 
-    .event-dot {
-        top: -20px;
-        left: -35px;
-        width: 4px;
-        height: 4px;
-    }
-
 }
 
 @media screen and (max-width: 375px) and (min-width: 300px){
@@ -485,11 +476,11 @@ textarea:focus {
         width: 40%;
     }
 
-    .event-dot {
-        top: 0px;
-        left: -15px;
-        width: 2px;
-        height: 2px;
+    .calendar-table td .event-dot {
+        top: 5px;
+        left: 8px;
+        width: 4px;
+        height: 4px
     }
 
     .modal-content p {
