@@ -146,13 +146,22 @@ button img {
 
 #timeInputs {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     justify-content: space-between;
     align-items: center;
+    margin: 0;
 }
 
-#start-time {
-    margin-right: 30px;
+#end,
+#start {
+    display: flex;
+    flex-direction: row;
+    align-items: center ;
+}
+
+#start-time,
+#end-time {
+    max-width: 70px;;
 }
 
 .modal {
