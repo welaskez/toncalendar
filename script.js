@@ -8,10 +8,6 @@ document.addEventListener("DOMContentLoaded", function() {
     const modalContent = document.querySelector('.modal-content');
     const closeButton = modalContent.querySelector('.close');
     const saveButton = modalContent.querySelector('.save');
-    const eventInput = modalContent.querySelector('#event-date');
-    const titleInput = modalContent.querySelector('#event-title');
-    const descriptionInput = modalContent.querySelector('#event-description');
-    const imageInput = modalContent.querySelector('#event-image');
 
     let events = [];
     
@@ -68,18 +64,27 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     saveButton.addEventListener("click", function() {
-        const date = eventInput.value;
-        const start = start.value;
-        const end = end.value;
-        const title = titleInput.value;
-        const description = descriptionInput.value;
-        const image = imageInput.value;
+        const startDate = document.getElementById('start-date').value;
+        const startTime = document.getElementById('start-time').value;
+        const endDate = document.getElementById('end-date').value;
+        const endTime = document.getElementById('end-time').value;
+        const title = document.getElementById('event-title').value;
+        const description = document.getElementById('event-description').value;
+        const imageInput = document.getElementById('event-image');
+        const image = imageInput.files[0];
         
-        if (date && title && description && image && start && end) {
-            const eventData = { id: events.length, date, start, end, title, description, image };
-            if (!Array.isArray(events)) {
-                events = [];
-            }
+        if (startDate && startTime && endDate && endTime && title && description && image) {
+            const eventData = {
+                id: events.length,
+                date: startDate,
+                startTime,
+                startDate,
+                endTime,
+                endDate,
+                title,
+                description,
+                image
+            };
             events.push(eventData);
             closeModal();
             displayEvents();
@@ -87,8 +92,7 @@ document.addEventListener("DOMContentLoaded", function() {
         } else {
             alert("Please complete all fields.");
         }   
-        window.location.reload();  
-    })
+    });
 
     function renderCalendar(month, year) {
         calendarBody.innerHTML = "";
@@ -137,11 +141,16 @@ document.addEventListener("DOMContentLoaded", function() {
     function openModal(addEvent, date = "") {
         if (addEvent) {
             modalContent.innerHTML = `
-                <input type="date" id="event-date">
                 <input type="text" id="event-title" placeholder="Event title">
                 <div id="timeInputs">
-                    Start: <input type="time" id="start-time" placeholder="Start time"> 
-                    End: <input type="time" id="end-time" placeholder="End time">
+                    <div id="start">
+                        Start: <input type="time" id="start-time" placeholder="Start time"> 
+                        <input type="date" id="start-date">
+                    </div>
+                    <div id="end">
+                        End: <input type="time" id="end-time" placeholder="End time">
+                        <input type="date" id="end-date">
+                    </div>
                 </div>
                 <textarea id="event-description" placeholder="Event description"></textarea>
                 <input type="file" id="event-image">
@@ -150,18 +159,19 @@ document.addEventListener("DOMContentLoaded", function() {
             `;
             const saveButton = modalContent.querySelector('.save'); 
             saveButton.addEventListener("click", function() {
-                const date = document.getElementById('event-date').value;
-                const start = modalContent.querySelector('#start-time').value;
-                const end = modalContent.querySelector('#end-time').value;
+                const startTime = modalContent.querySelector('#start-time').value;
+                const startDate = modalContent.querySelector('#start-date').value;
+                const endTime = modalContent.querySelector('#end-time').value;
+                const endDate = modalContent.querySelector('#end-date').value;
                 const title = document.getElementById('event-title').value;
                 const description = document.getElementById('event-description').value;
                 const imageInput = document.getElementById('event-image');
                 const image = imageInput.files[0]
                 
-                if (date && title && description && image && start && end) {
+                if (title && description && image && startDate && startTime && endTime && endDate) {
                     const reader = new FileReader();
                     reader.onload = function() {
-                        const eventData = { id: events.length, date, start, end, title, description, image: reader.result };
+                        const eventData = { id: events.length, startTime, startDate ,endTime, endDate, title, description, image: reader.result };
                         events.push(eventData);
                         closeModal();
                         displayEvents();
@@ -174,7 +184,8 @@ document.addEventListener("DOMContentLoaded", function() {
                 window.location.reload()
             });
         } else {
-            const eventData = events.filter(event => event.date === date);
+            const eventData = events.filter(event => event.startDate === date);
+            console.log(date)
             if (eventData && eventData.length > 0) {
                 modalContent.innerHTML = ''; 
                 eventData.forEach((eventData, index) => {
@@ -184,9 +195,8 @@ document.addEventListener("DOMContentLoaded", function() {
                         eventElement.classList.add('additional-event');
                     }
                     eventElement.innerHTML = `
-                        <p>Date: ${eventData.date}</p>
-                        <p>Start: ${eventData.start}</p>
-                        <p>End: ${eventData.end}</p>
+                        <p>Start: ${eventData.startTime} ${eventData.startDate}</p>
+                        <p>End: ${eventData.endTime} ${eventData.endDate}</p>
                         <p>Title: ${eventData.title}</p>
                         <p class="description">Description: ${eventData.description}</p>
                         <img src="${eventData.image}" alt="Event Image">
@@ -199,7 +209,6 @@ document.addEventListener("DOMContentLoaded", function() {
                 });
             } else {
                 modalContent.innerHTML = `
-                    <p>Date: ${date}</p>
                     <p>No events for this date</p>
                     <span class="close">&times;</span>
                 `;
@@ -220,59 +229,40 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function displayEvents() {
+        const modalContent = document.querySelector('.modal-content');
+        modalContent.innerHTML = '';
+        
         events.forEach(eventData => {
-            const date = eventData.date;
-            const eventDataList = eventData.events;
-            if (eventDataList && eventDataList.length > 0) {
-                eventDataList.forEach((event, index) => {
-                    const modalId = `modal-${date}-${index}`; 
-                    let modal = document.getElementById(modalId);
-                    if (!modal) {
-                        modal = createModal(date, modalId);
-                        document.body.appendChild(modal);
-                    }
-                    const eventElement = document.createElement('div');
-                    eventElement.classList.add('modal-content');
-                    eventElement.innerHTML = `
-                        <p>${event.title}</p>
-                        <p>Description: ${event.description}</p>
-                        <img src="${event.image}" alt="Event Image">
-                        <span class="close">&times;</span>
-                    `;
-                    modal.appendChild(eventElement);
-                });
-            }
+            const eventElement = document.createElement('div');
+            eventElement.classList.add('modal-content');
+            eventElement.innerHTML = `
+                <p>Start: ${eventData.startTime} ${eventData.startDate}</p>
+                <p>End: ${eventData.endTime} ${eventData.endDate}</p>
+                <p>Title: ${eventData.title}</p>
+                <p class="description">Description: ${eventData.description}</p>
+                <img src="${eventData.image}" alt="Event Image">
+                <span class="close">&times;</span>
+            `;
+            modalContent.appendChild(eventElement); 
+    
+            const closeButton = eventElement.querySelector('.close');
+            closeButton.addEventListener('click', closeModal);
         });
     }  
     
-    function createModal(date, modalId) {
-        const modal = document.createElement('div');
-        modal.id = modalId;
-        modal.classList.add('modal');
-        modal.innerHTML = `
-            <div class="modal-content">
-                <span class="close">&times;</span>
-                <h2>${date}</h2>
-            </div>
-        `;
-        const closeButton = modal.querySelector('.close');
-        closeButton.addEventListener('click', () => {
-            modal.style.display = 'none';
-        });
-        return modal;
-    }
+
         
     function highlightEventDates() {
         const cells = document.querySelectorAll('.calendar-table td');
         
         cells.forEach(cell => {
             const date = cell.dataset.date;
-            const eventDataForDate = events.filter(event => event.date === date);
+            const eventDataForDate = events.filter(event => event.startDate === date);
             const numberOfEvents = eventDataForDate.length;
     
             if (numberOfEvents > 0) {
-                const existingContent = cell.innerHTML;
-                cell.innerHTML = `<span class="event-dot">${numberOfEvents}</span>${existingContent}`; // Добавляем количество событий перед текущим содержимым ячейки
+                const existingContent = cell.innerHTML; 
+                cell.innerHTML = `<span class="event-dot">${numberOfEvents}</span>${existingContent}`; 
             }
         });
     }
